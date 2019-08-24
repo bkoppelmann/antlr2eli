@@ -1,0 +1,64 @@
+@p maximum_input_line_length = infinity
+
+@O@<basic.con@>==@{
+    grammarSpec
+      : DOC_COMMENT* grammarDecl rules
+      .
+
+    grammarDecl
+      : grammarType grammarIdent ';'
+      .
+    grammarType
+      : ('lexer' 'grammar' / 'parser' 'grammar' / 'grammar')
+      .
+
+    DOC_COMMENT
+      : doc_comment
+      .
+
+    rules
+      : ruleSpec*
+      .
+
+    ruleSpec
+      : parserRuleSpec
+      .
+
+    /*parserRuleSpec
+     * : DOC_COMMENT* ruleModifiers? RULE_REF argActionBlock? ruleReturns?
+     *   throwsSpec? localsSpec? rulePrequel* COLON ruleBlock SEMI exceptionGroup
+     */
+    parserRuleSpec
+      : DOC_COMMENT* ruleIdent ':' ruleBlock ';'
+      .
+
+    ruleBlock
+      : ruleAltList
+      .
+
+    ruleAltList
+      : labeledAlt ('|' labeledAlt)*
+      .
+
+    labeledAlt
+      : alternative ['#' identifier]
+      .
+
+    alternative
+      : [elementOptions] element+
+      /
+      .
+
+    ruleIdent
+      : identifier
+      .
+
+    grammarIdent
+      : identifier
+      .
+@}
+
+@O@<basic.gla@>@{
+    doc_comment: C_COMMENT
+    identifier: $[a-zA-Z0-9]+
+@}
