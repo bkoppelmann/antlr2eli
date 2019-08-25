@@ -8,4 +8,4 @@ grammar simple;
 
 simple
   : 'Foo'
-  .
+  ;

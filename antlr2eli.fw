@@ -45,8 +45,48 @@
       .
 
     alternative
-      : [elementOptions] element+
+      : element+
       /
+      .
+
+    element
+      : labeledElement (ebnfSuffix / )
+      / atom (ebnfSuffix / )
+      / ebnf
+      .
+
+    labeledElement
+      : identifier ('=' / '+=') (atom / block)
+      .
+
+    ebnf
+      : block [blockSuffix]
+      .
+
+    blockSuffix
+      : ebnfSuffix
+      .
+
+    ebnfSuffix
+      : '?' ['?']
+      / '*' ['?']
+      / '+' ['?']
+      .
+
+    atom
+      : terminal
+      .
+
+    block
+      : '(' altList ')'
+      .
+
+    altList
+      : alternative ('|' alternative)*
+      .
+
+    terminal
+      : string_literal
       .
 
     ruleIdent
@@ -60,5 +100,6 @@
 
 @O@<basic.gla@>@{
     doc_comment: C_COMMENT
-    identifier: $[a-zA-Z0-9]+
+    identifier: C_IDENTIFIER
+    string_literal: $'[a-zA-Z0-9]+'
 @}
