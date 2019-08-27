@@ -21,7 +21,7 @@
       .
 
     ruleSpec
-      : parserRuleSpec
+      : DOC_COMMENT* (parserRuleSpec / lexerRuleSpec)
       .
 
     /*parserRuleSpec
@@ -29,19 +29,45 @@
      *   throwsSpec? localsSpec? rulePrequel* COLON ruleBlock SEMI exceptionGroup
      */
     parserRuleSpec
-      : DOC_COMMENT* ruleIdent ':' ruleBlock ';'
+      : ruleIdent ':' ruleBlock ';'
+      .
+
+    lexerRuleSpec
+      : tokenIdent ':' lexerRuleBlock ';'
       .
 
     ruleBlock
       : ruleAltList
       .
 
+    lexerRuleBlock
+      : lexerAltList
+      .
+
     ruleAltList
       : labeledAlt ('|' labeledAlt)*
       .
 
+    lexerAltList
+      : lexerAlt ('|' lexerAlt)*
+      .
+
     labeledAlt
       : alternative ['#' identifier]
+      .
+
+    lexerAlt
+      : lexerElements
+      .
+
+    lexerElements
+      : lexerElement+
+      .
+
+    lexerAtom
+      : characterRange
+      / terminal
+      / '.'
       .
 
     alternative
@@ -55,8 +81,22 @@
       / ebnf
       .
 
+    lexerElement
+      : labeledLexerElement [ebnfSuffix]
+      / lexerAtom [ebnfSuffix]
+      / lexerBlock [ebnfSuffix]
+      .
+
     labeledElement
       : identifier ('=' / '+=') (atom / block)
+      .
+
+    labeledLexerElement
+      : identifier ('=' / '+=') (lexerAtom | lexerBlock)
+      .
+
+    lexerBlock
+      : '(' lexerAltList ')'
       .
 
     ebnf
@@ -75,6 +115,11 @@
 
     atom
       : terminal
+      / ruleref
+      .
+
+    characterRange
+      : string_literal '..' string_literal
       .
 
     block
@@ -90,16 +135,30 @@
       .
 
     ruleIdent
+      : ParserIdentifier
+      .
+
+    ruleref
       : identifier
+      .
+
+    tokenIdent
+      : LexerIdentifier
       .
 
     grammarIdent
       : identifier
       .
+
+    identifier
+      : LexerIdentifier
+      / ParserIdentifier
+      .
 @}
 
 @O@<basic.gla@>@{
     doc_comment: C_COMMENT
-    identifier: C_IDENTIFIER
-    string_literal: $'[a-zA-Z0-9]+'
+    LexerIdentifier: $[A-Z][a-zA-Z0-9_]*
+    ParserIdentifier: $[a-z][a-zA-Z0-9_]*
+    string_literal: $'(.)+'
 @}
